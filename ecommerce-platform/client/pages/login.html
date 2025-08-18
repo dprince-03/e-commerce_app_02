@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - E-commerce Platform</title>
+    <meta name="description" content="Login to your e-commerce account">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <a href="../index.html" class="brand-logo">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>E-Shop</span>
+                    </a>
+                </div>
+                <div class="nav-actions">
+                    <a href="../index.html" class="btn btn-ghost">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <section class="auth-section">
+            <div class="container">
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <h1 class="auth-title">Welcome Back</h1>
+                            <p class="auth-description">Sign in to your account to continue shopping</p>
+                        </div>
+
+                        <form class="auth-form" id="loginForm">
+                            <div class="form-group">
+                                <label for="email" class="form-label required">Email Address</label>
+                                <input type="email" id="email" name="email" class="form-control" required>
+                                <div class="invalid-feedback" id="emailError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password" class="form-label required">Password</label>
+                                <div class="input-group">
+                                    <input type="password" id="password" name="password" class="form-control" required>
+                                    <div class="input-group-append">
+                                        <button type="button" class="input-group-text" id="togglePassword">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="invalid-feedback" id="passwordError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" id="rememberMe" name="rememberMe" class="form-check-input">
+                                    <label for="rememberMe" class="form-check-label">Remember me</label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;" id="loginBtn">
+                                <i class="fas fa-sign-in-alt"></i> Sign In
+                            </button>
+                        </form>
+
+                        <div class="auth-divider">
+                            <span>or</span>
+                        </div>
+
+                        <div class="social-auth">
+                            <button class="btn btn-outline social-btn" onclick="showComingSoon()">
+                                <i class="fab fa-google"></i> Continue with Google
+                            </button>
+                            <button class="btn btn-outline social-btn" onclick="showComingSoon()">
+                                <i class="fab fa-facebook-f"></i> Continue with Facebook
+                            </button>
+                        </div>
+
+                        <div class="auth-links">
+                            <a href="#" class="auth-link" onclick="showForgotPassword()">Forgot your password?</a>
+                            <p class="auth-switch">
+                                Don't have an account? 
+                                <a href="register.html" class="auth-link">Sign up here</a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="auth-image">
+                        <img src="../assets/images/login-illustration.jpg" alt="Login" class="auth-img">
+                        <div class="auth-features">
+                            <div class="feature-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Secure Login</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span>Save Your Cart</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-heart"></i>
+                                <span>Track Wishlist</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal" id="forgotPasswordModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reset Password</h5>
+                    <button type="button" class="btn-close" onclick="closeForgotPasswordModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Enter your email address and we'll send you a link to reset your password.</p>
+                    <form id="forgotPasswordForm">
+                        <div class="form-group">
+                            <label for="resetEmail" class="form-label required">Email Address</label>
+                            <input type="email" id="resetEmail" name="resetEmail" class="form-control" required>
+                            <div class="invalid-feedback" id="resetEmailError"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeForgotPasswordModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="sendResetBtn">Send Reset Link</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/animations/loading.js"></script>
+    <script src="../js/animations/transitions.js"></script>
+
+    <script>
+        // Login form handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+
+            // Toggle password visibility
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
+
+            // Handle login form submission
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const email = formData.get('email');
+                const password = formData.get('password');
+
+                // Clear previous errors
+                clearFormErrors();
+
+                // Validate form
+                if (!validateLoginForm(email, password)) {
+                    return;
+                }
+
+                try {
+                    setButtonLoading(loginBtn, true);
+                    
+                    await authManager.login(email, password);
+                    
+                    // Redirect after successful login
+                    setTimeout(() => {
+                        authManager.handlePostLoginRedirect();
+                    }, 1000);
+                    
+                } catch (error) {
+                    console.error('Login failed:', error);
+                    
+                    // Show specific error messages
+                    if (error.message.includes('Invalid credentials')) {
+                        showFieldError('email', 'Invalid email or password');
+                        showFieldError('password', 'Invalid email or password');
+                    } else if (error.message.includes('Account temporarily locked')) {
+                        showFieldError('email', 'Account is temporarily locked due to too many failed attempts');
+                    } else {
+                        toastManager.error('Login failed. Please try again.');
+                    }
+                } finally {
+                    setButtonLoading(loginBtn, false);
+                }
+            });
+
+            // Forgot password form
+            const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+            const sendResetBtn = document.getElementById('sendResetBtn');
+
+            sendResetBtn.addEventListener('click', async function() {
+                const resetEmail = document.getElementById('resetEmail').value;
+                
+                if (!resetEmail || !isValidEmail(resetEmail)) {
+                    showFieldError('resetEmail', 'Please enter a valid email address');
+                    return;
+                }
+
+                try {
+                    setButtonLoading(sendResetBtn, true);
+                    
+                    await authManager.forgotPassword(resetEmail);
+                    closeForgotPasswordModal();
+                    
+                } catch (error) {
+                    console.error('Forgot password failed:', error);
+                } finally {
+                    setButtonLoading(sendResetBtn, false);
+                }
+            });
+
+            // Check if user is already logged in
+            if (authManager.isAuthenticated()) {
+                window.location.href = '../dashboard.html';
+            }
+
+            // Handle URL parameters for email verification or password reset
+            const urlParams = getQueryParams();
+            if (urlParams.verified === 'true') {
+                toastManager.success('Email verified successfully! You can now log in.');
+            }
+        });
+
+        // Form validation
+        function validateLoginForm(email, password) {
+            let isValid = true;
+
+            if (!email || !isValidEmail(email)) {
+                showFieldError('email', 'Please enter a valid email address');
+                isValid = false;
+            }
+
+            if (!password || password.length < 6) {
+                showFieldError('password', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Show field error
+        function showFieldError(fieldName, message) {
+            const field = document.getElementById(fieldName);
+            const errorElement = document.getElementById(fieldName + 'Error');
+            
+            if (field && errorElement) {
+                field.classList.add('is-invalid');
+                errorElement.textContent = message;
+            }
+        }
+
+        // Clear form errors
+        function clearFormErrors() {
+            document.querySelectorAll('.form-control').forEach(field => {
+                field.classList.remove('is-invalid');
+            });
+            document.querySelectorAll('.invalid-feedback').forEach(error => {
+                error.textContent = '';
+            });
+        }
+
+        // Show forgot password modal
+        function showForgotPassword() {
+            const modal = document.getElementById('forgotPasswordModal');
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close forgot password modal
+        function closeForgotPasswordModal() {
+            const modal = document.getElementById('forgotPasswordModal');
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+            
+            // Clear form
+            document.getElementById('forgotPasswordForm').reset();
+            clearFormErrors();
+        }
+    </script>
+
+    <style>
+        .auth-section {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-8) 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        }
+
+        .auth-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-12);
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .auth-card {
+            background: var(--white);
+            padding: var(--spacing-10);
+            border-radius: var(--border-radius-2xl);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: var(--spacing-8);
+        }
+
+        .auth-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-3);
+            color: var(--gray-900);
+        }
+
+        .auth-description {
+            color: var(--gray-600);
+            font-size: var(--font-size-base);
+            margin-bottom: 0;
+        }
+
+        .auth-form {
+            margin-bottom: var(--spacing-6);
+        }
+
+        .auth-divider {
+            text-align: center;
+            margin: var(--spacing-6) 0;
+            position: relative;
+        }
+
+        .auth-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--gray-300);
+        }
+
+        .auth-divider span {
+            background: var(--white);
+            padding: 0 var(--spacing-4);
+            color: var(--gray-500);
+            font-size: var(--font-size-sm);
+        }
+
+        .social-auth {
+            display: grid;
+            gap: var(--spacing-3);
+            margin-bottom: var(--spacing-6);
+        }
+
+        .social-btn {
+            justify-content: flex-start;
+            gap: var(--spacing-3);
+        }
+
+        .auth-links {
+            text-align: center;
+        }
+
+        .auth-link {
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: var(--font-size-sm);
+        }
+
+        .auth-switch {
+            margin-top: var(--spacing-4);
+            color: var(--gray-600);
+            font-size: var(--font-size-sm);
+        }
+
+        .auth-image {
+            text-align: center;
+        }
+
+        .auth-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--border-radius-xl);
+            margin-bottom: var(--spacing-6);
+        }
+
+        .auth-features {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-4);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            color: var(--white);
+            font-weight: 500;
+        }
+
+        .feature-item i {
+            width: 24px;
+            text-align: center;
+            color: var(--primary-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 991.98px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-8);
+            }
+
+            .auth-card {
+                padding: var(--spacing-8);
+            }
+
+            .auth-image {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .auth-section {
+                padding: var(--spacing-4) 0;
+            }
+
+            .auth-card {
+                padding: var(--spacing-6);
+            }
+
+            .auth-title {
+                font-size: var(--font-size-2xl);
+            }
+        }
+    </style>
+</body>
+</html>
