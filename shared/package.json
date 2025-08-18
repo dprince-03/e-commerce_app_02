@@ -1,0 +1,19 @@
+{
+  "name": "ecommerce-shared",
+  "version": "1.0.0",
+  "description": "Shared utilities and types for e-commerce platform",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'No build step required'",
+    "test": "echo 'No tests in shared package'"
+  },
+  "dependencies": {
+    "joi": "^17.11.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.1.0"
+  }
+}
