@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - My Shop</title>
+  <link rel="stylesheet" href="../css/main.css" />
+</head>
+<body>
+  <header id="header"></header>
+  <main>
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button class="btn" type="submit">Login</button>
+    </form>
+    <div id="msg"></div>
+  </main>
+  <footer id="footer"></footer>
+  <script src="../js/utils.js"></script>
+  <script>
+    window.renderHeaderFooter();
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email=document.getElementById('email').value;
+      const password=document.getElementById('password').value;
+      try{
+        const res = await window.request('/auth/login',{method:'POST',body:JSON.stringify({email,password})});
+        localStorage.setItem('token', res.token);
+        document.getElementById('msg').textContent='Logged in';
+      }catch{document.getElementById('msg').textContent='Invalid credentials';}
+    });
+  </script>
+</body>
+</html>
+

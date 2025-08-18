@@ -1,0 +1,14 @@
+{
+  "name": "ecommerce-platform-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "server"
+  ],
+  "scripts": {
+    "dev:server": "npm --workspace server run dev",
+    "start:server": "npm --workspace server run start",
+    "test": "npm --workspace server test"
+  }
+}
+

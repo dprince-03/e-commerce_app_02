@@ -1,3 +1,21 @@
+node_modules
+.env
+.DS_Store
+coverage
+dist
+*.log
+*.sqlite
+tmp/
+.nyc_output
+.vercel
+.idea
+.vscode
+server/node_modules
+client/node_modules
+server/.cache
+server/build
+client/build
+
 # Logs
 logs
 *.log
