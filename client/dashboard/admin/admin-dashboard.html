@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="../../css/main.css" />
+</head>
+<body>
+  <header id="header"></header>
+  <main>
+    <h2>Admin Dashboard</h2>
+    <section>
+      <h3>Products</h3>
+      <form id="productForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;align-items:end">
+        <input id="pname" placeholder="Name" required />
+        <input id="pdesc" placeholder="Description" />
+        <input id="pprice" type="number" min="0" step="0.01" placeholder="Price" required />
+        <input id="pstock" type="number" min="0" placeholder="Stock" required />
+        <input id="pimage" placeholder="Image URL" />
+        <select id="pcat"></select>
+        <button class="btn" type="submit">Create</button>
+      </form>
+      <div id="productList" class="grid" style="margin-top:16px"></div>
+    </section>
+    <section style="margin-top:24px">
+      <h3>Users & Roles</h3>
+      <div id="users"></div>
+    </section>
+  </main>
+  <footer id="footer"></footer>
+  <script src="../../js/utils.js"></script>
+  <script>
+    window.renderHeaderFooter();
+    const token = localStorage.getItem('token');
+    if(!token){ alert('Admin auth required'); location.href='/client/pages/login.html'; }
+
+    async function fetchCategories(){
+      const res = await fetch(window.apiBase + '/admin/categories', { headers: { Authorization: 'Bearer '+token }});
+      const cats = await res.json();
+      const sel=document.getElementById('pcat');
+      sel.innerHTML = '<option value="">No category</option>' + cats.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+    }
+
+    async function fetchProducts(){
+      const res = await fetch(window.apiBase + '/products');
+      const data = await res.json();
+      const list = document.getElementById('productList');
+      list.innerHTML = data.items.map(p=>`
+        <div class="card">
+          <img src="${p.imageUrl || 'https://picsum.photos/seed/'+p.id+'/400/300'}"/>
+          <h4>${p.name}</h4>
+          <div>$${p.price} • stock: ${p.stock}</div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button class="btn" onclick="deleteProduct('${p.id}')">Delete</button>
+          </div>
+        </div>`).join('');
+    }
+
+    window.deleteProduct = async function(id){
+      await fetch(window.apiBase + '/admin/products/' + id, { method:'DELETE', headers: { 'Content-Type':'application/json', Authorization: 'Bearer '+token }});
+      fetchProducts();
+    }
+
+    document.getElementById('productForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById('pname').value,
+        description: document.getElementById('pdesc').value,
+        price: document.getElementById('pprice').value,
+        stock: Number(document.getElementById('pstock').value||0),
+        imageUrl: document.getElementById('pimage').value,
+        CategoryId: document.getElementById('pcat').value || null
+      };
+      await fetch(window.apiBase + '/admin/products', { method:'POST', headers: { 'Content-Type':'application/json', Authorization: 'Bearer '+token }, body: JSON.stringify(payload) });
+      e.target.reset();
+      fetchProducts();
+    });
+
+    async function fetchUsers(){
+      const res = await fetch(window.apiBase + '/admin/users', { headers: { Authorization: 'Bearer '+token }});
+      const users = await res.json();
+      document.getElementById('users').innerHTML = `<table>
+        <thead><tr><th>Email</th><th>Name</th><th>Role</th><th>Action</th></tr></thead>
+        <tbody>
+          ${users.map(u=>`<tr>
+            <td>${u.email}</td>
+            <td>${u.name}</td>
+            <td>
+              <select id="role-${u.id}">
+                <option value="customer" ${u.role==='customer'?'selected':''}>customer</option>
+                <option value="admin" ${u.role==='admin'?'selected':''}>admin</option>
+              </select>
+            </td>
+            <td><button class="btn" onclick="updateRole('${u.id}')">Save</button></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+    }
+
+    window.updateRole = async function(id){
+      const role = document.getElementById('role-'+id).value;
+      await fetch(window.apiBase + '/admin/users/'+id+'/role', { method:'PUT', headers: { 'Content-Type':'application/json', Authorization: 'Bearer '+token }, body: JSON.stringify({ role }) });
+      fetchUsers();
+    }
+
+    fetchCategories(); fetchProducts(); fetchUsers();
+  </script>
+</body>
+</html>
+

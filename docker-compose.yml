@@ -1,5 +1,38 @@
 version: "3.9"
 services:
+  server:
+    build: .
+    container_name: ecommerce_server
+    environment:
+      - PORT=4000
+      - NODE_ENV=production
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=ecommerce
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_SSL=false
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=devsecret
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "4000:4000"
+
+  nginx:
+    image: nginx:alpine
+    container_name: ecommerce_nginx
+    volumes:
+      - ./client:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:80"
+    depends_on:
+      - server
   postgres:
     image: postgres:16-alpine
     container_name: ecommerce_postgres
