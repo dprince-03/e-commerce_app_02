@@ -1,0 +1,32 @@
+{
+  "name": "ecommerce-platform",
+  "version": "1.0.0",
+  "description": "Full-stack E-commerce Platform with Node.js and PostgreSQL",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "server:start": "cd server && npm start",
+    "client:dev": "cd client && live-server --port=3001",
+    "test": "cd server && npm test",
+    "build": "cd server && npm run build",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
+  },
+  "keywords": [
+    "ecommerce",
+    "nodejs",
+    "express",
+    "postgresql",
+    "jwt",
+    "stripe"
+  ],
+  "author": "E-commerce Platform Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "live-server": "^1.2.2"
+  }
+}

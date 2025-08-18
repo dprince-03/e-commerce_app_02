@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Platform - Home</title>
+    <meta name="description" content="Premium e-commerce platform with a wide range of products">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <a href="index.html" class="brand-logo">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>E-Shop</span>
+                    </a>
+                </div>
+
+                <div class="nav-search">
+                    <form class="search-form" id="searchForm">
+                        <input type="text" class="search-input" placeholder="Search products..." id="searchInput">
+                        <button type="submit" class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="nav-actions">
+                    <a href="#" class="nav-action" id="wishlistBtn">
+                        <i class="fas fa-heart"></i>
+                        <span class="action-count" id="wishlistCount">0</span>
+                    </a>
+                    <a href="pages/cart.html" class="nav-action" id="cartBtn">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="action-count" id="cartCount">0</span>
+                    </a>
+                    <div class="nav-user" id="navUser">
+                        <button class="user-btn" id="userBtn">
+                            <i class="fas fa-user"></i>
+                            <span id="userName">Account</span>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="user-menu" id="guestMenu">
+                                <a href="pages/login.html" class="user-menu-item">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    Login
+                                </a>
+                                <a href="pages/register.html" class="user-menu-item">
+                                    <i class="fas fa-user-plus"></i>
+                                    Register
+                                </a>
+                            </div>
+                            <div class="user-menu" id="userMenu" style="display: none;">
+                                <a href="pages/profile.html" class="user-menu-item">
+                                    <i class="fas fa-user"></i>
+                                    Profile
+                                </a>
+                                <a href="dashboard.html" class="user-menu-item">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                    Dashboard
+                                </a>
+                                <a href="#" class="user-menu-item" id="logoutBtn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="nav-toggle" id="navToggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <div class="mobile-menu-content">
+                <a href="index.html" class="mobile-menu-item">Home</a>
+                <a href="pages/products.html" class="mobile-menu-item">Products</a>
+                <a href="pages/about.html" class="mobile-menu-item">About</a>
+                <a href="pages/cart.html" class="mobile-menu-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    Cart (<span id="mobileCartCount">0</span>)
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1 class="hero-title">Discover Amazing Products</h1>
+                    <p class="hero-description">Shop from our curated collection of premium products with fast delivery and excellent customer service</p>
+                    <div class="hero-actions">
+                        <a href="pages/products.html" class="btn btn-primary btn-lg">Shop Now</a>
+                        <a href="pages/about.html" class="btn btn-outline btn-lg">Learn More</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="assets/images/hero-image.jpg" alt="Shopping" class="hero-img">
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Categories -->
+        <section class="categories-section">
+            <div class="container">
+                <h2 class="section-title">Shop by Category</h2>
+                <div class="categories-grid" id="categoriesGrid">
+                    <!-- Categories will be loaded dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products -->
+        <section class="featured-products">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Featured Products</h2>
+                    <a href="pages/products.html" class="section-link">View All</a>
+                </div>
+                <div class="products-grid" id="featuredProducts">
+                    <!-- Products will be loaded dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="container">
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                        <h3 class="feature-title">Free Shipping</h3>
+                        <p class="feature-description">Free shipping on orders over $50</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-undo"></i>
+                        </div>
+                        <h3 class="feature-title">Easy Returns</h3>
+                        <p class="feature-description">30-day return policy</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h3 class="feature-title">24/7 Support</h3>
+                        <p class="feature-description">Customer support anytime</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Secure Payment</h3>
+                        <p class="feature-description">100% secure transactions</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section class="newsletter-section">
+            <div class="container">
+                <div class="newsletter-content">
+                    <h2 class="newsletter-title">Stay Updated</h2>
+                    <p class="newsletter-description">Subscribe to get special offers, free giveaways, and exclusive deals</p>
+                    <form class="newsletter-form" id="newsletterForm">
+                        <input type="email" class="newsletter-input" placeholder="Enter your email" required>
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">E-Shop</h3>
+                    <p class="footer-description">Your trusted partner for online shopping with quality products and excellent service.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-section-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="pages/about.html">About Us</a></li>
+                        <li><a href="pages/products.html">Products</a></li>
+                        <li><a href="#" onclick="showComingSoon()">Contact</a></li>
+                        <li><a href="#" onclick="showComingSoon()">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-section-title">Customer Service</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="showComingSoon()">Shipping Info</a></li>
+                        <li><a href="#" onclick="showComingSoon()">Returns</a></li>
+                        <li><a href="#" onclick="showComingSoon()">Size Guide</a></li>
+                        <li><a href="#" onclick="showComingSoon()">Track Order</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-section-title">Contact Info</h4>
+                    <div class="contact-info">
+                        <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+                        <p><i class="fas fa-envelope"></i> support@eshop.com</p>
+                        <p><i class="fas fa-map-marker-alt"></i> 123 Commerce St, City, State 12345</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 E-Shop. All rights reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#" onclick="showComingSoon()">Privacy Policy</a>
+                    <a href="#" onclick="showComingSoon()">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/animations/loading.js"></script>
+    <script src="js/animations/transitions.js"></script>
+</body>
+</html>
