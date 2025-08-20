@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - E-commerce Platform</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+    <header id="header-container"></header>
+    
+    <main class="profile-page">
+        <div class="container">
+            <h1>User Profile</h1>
+            
+            <div class="profile-container">
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                    <button type="submit" class="btn-primary">Update Profile</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <footer id="footer-container"></footer>
+    
+    <script src="../js/main.js"></script>
+    <script src="../js/user-profile.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadComponents();
+            loadUserProfile();
+        });
+
+        async function loadComponents() {
+            await loadComponent('header-container', '../components/header.html');
+            await loadComponent('footer-container', '../components/footer.html');
+        }
+
+        async function loadComponent(containerId, filePath) {
+            try {
+                const response = await fetch(filePath);
+                const html = await response.text();
+                document.getElementById(containerId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component ${filePath}:`, error);
+            }
+        }
+
+        async function loadUserProfile() {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch('/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load user profile');
+                }
+
+                const profile = await response.json();
+                populateProfileForm(profile);
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            }
+        }
+
+        function populateProfileForm(profile) {
+            document.getElementById('firstName').value = profile.firstName || '';
+            document.getElementById('lastName').value = profile.lastName || '';
+            document.getElementById('email').value = profile.email || '';
+            document.getElementById('phone').value = profile.phone || '';
+        }
+    </script>
+</body>
+</html>

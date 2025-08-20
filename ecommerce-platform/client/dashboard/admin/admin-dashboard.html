@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - E-commerce Platform</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/charts.css">
+</head>
+<body>
+    <div id="app">
+        <header id="header-container"></header>
+        
+        <main class="admin-dashboard">
+            <aside class="admin-sidebar">
+                <nav class="admin-nav">
+                    <ul>
+                        <li><a href="#overview" class="nav-link active">Overview</a></li>
+                        <li><a href="#products" class="nav-link">Products</a></li>
+                        <li><a href="#orders" class="nav-link">Orders</a></li>
+                        <li><a href="#customers" class="nav-link">Customers</a></li>
+                        <li><a href="#analytics" class="nav-link">Analytics</a></li>
+                        <li><a href="#settings" class="nav-link">Settings</a></li>
+                    </ul>
+                </nav>
+            </aside>
+            
+            <section class="admin-content">
+                <div class="admin-header">
+                    <h1>Admin Dashboard</h1>
+                    <div class="admin-actions">
+                        <button class="btn-primary" onclick="addProduct()">Add Product</button>
+                        <button class="btn-secondary" onclick="exportData()">Export Data</button>
+                    </div>
+                </div>
+                
+                <div class="admin-overview">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Total Revenue</h3>
+                            <p class="stat-number" id="admin-revenue">$0</p>
+                            <span class="stat-change positive">+12.5%</span>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Orders</h3>
+                            <p class="stat-number" id="admin-orders">0</p>
+                            <span class="stat-change positive">+8.2%</span>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Products</h3>
+                            <p class="stat-number" id="admin-products">0</p>
+                            <span class="stat-change neutral">0%</span>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Customers</h3>
+                            <p class="stat-number" id="admin-customers">0</p>
+                            <span class="stat-change positive">+15.3%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <h3>Sales Analytics</h3>
+                            <canvas id="sales-chart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Product Performance</h3>
+                            <canvas id="product-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="recent-activity">
+                        <h3>Recent Activity</h3>
+                        <div id="activity-feed"></div>
+                    </div>
+                </div>
+                
+                <div class="admin-sections">
+                    <div class="product-management" id="product-section">
+                        <h2>Product Management</h2>
+                        <div class="product-controls">
+                            <input type="search" placeholder="Search products..." id="product-search">
+                            <select id="category-filter">
+                                <option value="">All Categories</option>
+                            </select>
+                            <button onclick="filterProducts()">Filter</button>
+                        </div>
+                        <div id="products-table"></div>
+                    </div>
+                    
+                    <div class="order-management" id="order-section">
+                        <h2>Order Management</h2>
+                        <div id="orders-table"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer id="footer-container"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../js/main.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/management.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAdminDashboard();
+            loadComponents();
+        });
+
+        async function loadAdminDashboard() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/admin/dashboard', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    updateAdminStats(data);
+                    initializeCharts(data);
+                    loadActivityFeed(data.recentActivity);
+                }
+            } catch (error) {
+                console.error('Error loading admin dashboard:', error);
+            }
+        }
+
+        function updateAdminStats(data) {
+            document.getElementById('admin-revenue').textContent = `$${data.totalRevenue || 0}`;
+            document.getElementById('admin-orders').textContent = data.totalOrders || 0;
+            document.getElementById('admin-products').textContent = data.totalProducts || 0;
+            document.getElementById('admin-customers').textContent = data.totalCustomers || 0;
+        }
+
+        function initializeCharts(data) {
+            // Initialize sales chart
+            const salesCtx = document.getElementById('sales-chart').getContext('2d');
+            new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: data.salesLabels || [],
+                    datasets: [{
+                        label: 'Sales',
+                        data: data.salesData || [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                }
+            });
+
+            // Initialize product chart
+            const productCtx = document.getElementById('product-chart').getContext('2d');
+            new Chart(productCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.productLabels || [],
+                    datasets: [{
+                        data: data.productData || [],
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 205, 86)',
+                            'rgb(75, 192, 192)',
+                            'rgb(153, 102, 255)'
+                        ]
+                    }]
+                }
+            });
+        }
+
+        function loadActivityFeed(activities) {
+            const feed = document.getElementById('activity-feed');
+            feed.innerHTML = activities.map(activity => `
+                <div class="activity-item">
+                    <span class="activity-time">${activity.time}</span>
+                    <span class="activity-text">${activity.text}</span>
+                </div>
+            `).join('');
+        }
+
+        function addProduct() {
+            window.location.href = '/pages/products.html?action=add';
+        }
+
+        function exportData() {
+            window.open('/api/admin/export', '_blank');
+        }
+
+        async function loadComponents() {
+            await loadComponent('header-container', '../../components/header.html');
+            await loadComponent('footer-container', '../../components/footer.html');
+        }
+
+        async function loadComponent(containerId, filePath) {
+            try {
+                const response = await fetch(filePath);
+                const html = await response.text();
+                document.getElementById(containerId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component ${filePath}:`, error);
+            }
+        }
+    </script>
+</body>
+</html>

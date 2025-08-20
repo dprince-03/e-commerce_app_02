@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - E-commerce Platform</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+    <header id="header-container"></header>
+    
+    <main class="cart-page">
+        <div class="container">
+            <h1>Shopping Cart</h1>
+            
+            <div class="cart-container">
+                <div class="cart-items" id="cart-items">
+                    <!-- Cart items will be loaded here -->
+                </div>
+                
+                <div class="cart-summary">
+                    <h2>Order Summary</h2>
+                    <div class="summary-item">
+                        <span>Subtotal:</span>
+                        <span id="cart-subtotal">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Shipping:</span>
+                        <span id="cart-shipping">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Tax:</span>
+                        <span id="cart-tax">$0.00</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total:</span>
+                        <span id="cart-total">$0.00</span>
+                    </div>
+                    
+                    <button class="btn-checkout" onclick="proceedToCheckout()">
+                        Proceed to Checkout
+                    </button>
+                    
+                    <button class="btn-continue" onclick="continueShopping()">
+                        Continue Shopping
+                    </button>
+                </div>
+            </div>
+            
+            <div class="empty-cart" id="empty-cart" style="display: none;">
+                <h2>Your cart is empty</h2>
+                <p>Add some products to get started!</p>
+                <button class="btn-primary" onclick="continueShopping()">
+                    Start Shopping
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <footer id="footer-container"></footer>
+    
+    <script src="../js/main.js"></script>
+    <script src="../js/cart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadComponents();
+            loadCart();
+        });
+
+        async function loadComponents() {
+            await loadComponent('header-container', '../components/header.html');
+            await loadComponent('footer-container', '../components/footer.html');
+        }
+
+        async function loadComponent(containerId, filePath) {
+            try {
+                const response = await fetch(filePath);
+                const html = await response.text();
+                document.getElementById(containerId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component ${filePath}:`, error);
+            }
+        }
+
+        function proceedToCheckout() {
+            window.location.href = 'checkout.html';
+        }
+
+        function continueShopping() {
+            window.location.href = 'products.html';
+        }
+    </script>
+</body>
+</html>

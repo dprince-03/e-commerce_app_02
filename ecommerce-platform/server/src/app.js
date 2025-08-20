@@ -7,10 +7,10 @@ const rateLimit = require('express-rate-limit');
 const slowDown = require('express-slow-down');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
+const path = require('path');
 
 // Import middleware
-const errorHandler = require('./middleware/errorHandler');
-const { notFound } = require('./middleware/errorHandler');
+const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -65,7 +65,8 @@ const limiter = rateLimit({
 const speedLimiter = slowDown({
   windowMs: 15 * 60 * 1000, // 15 minutes
   delayAfter: 50, // allow 50 requests per windowMs without delay
-  delayMs: 500 // add 500ms delay per request after delayAfter
+  delayMs: () => 500, // add 500ms delay per request after delayAfter
+  validate: { delayMs: false } // Disable validation warning
 });
 
 app.use('/api/', limiter);
@@ -84,7 +85,8 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Serve static files
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/assets', express.static(path.join(__dirname, '../../client/assets')));
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -108,7 +110,7 @@ app.use('/api/payments', paymentRoutes);
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('../client'));
+  app.use(express.static(path.join(__dirname, '../../client')));
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../../client/index.html'));
   });

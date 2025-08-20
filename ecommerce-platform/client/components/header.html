@@ -1,0 +1,164 @@
+<header class="header">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="/index.html" class="brand-logo">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>E-Shop</span>
+                </a>
+            </div>
+
+            <div class="nav-search">
+                <form class="search-form" id="searchForm">
+                    <input type="text" class="search-input" placeholder="Search products..." id="searchInput">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <div class="nav-actions">
+                <a href="#" class="nav-action" id="wishlistBtn">
+                    <i class="fas fa-heart"></i>
+                    <span class="action-count" id="wishlistCount">0</span>
+                </a>
+                <a href="/pages/cart.html" class="nav-action" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="action-count" id="cartCount">0</span>
+                </a>
+                <div class="nav-user" id="navUser">
+                    <button class="user-btn" id="userBtn">
+                        <i class="fas fa-user"></i>
+                        <span id="userName">Account</span>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-menu" id="guestMenu">
+                            <a href="/pages/login.html" class="user-menu-item">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Login
+                            </a>
+                            <a href="/pages/register.html" class="user-menu-item">
+                                <i class="fas fa-user-plus"></i>
+                                Register
+                            </a>
+                        </div>
+                        <div class="user-menu" id="userMenu" style="display: none;">
+                            <a href="/pages/profile.html" class="user-menu-item">
+                                <i class="fas fa-user"></i>
+                                Profile
+                            </a>
+                            <a href="/dashboard.html" class="user-menu-item">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Dashboard
+                            </a>
+                            <a href="#" class="user-menu-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <button class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <a href="/index.html" class="mobile-menu-item">Home</a>
+            <a href="/pages/products.html" class="mobile-menu-item">Products</a>
+            <a href="/pages/about.html" class="mobile-menu-item">About</a>
+            <a href="/pages/cart.html" class="mobile-menu-item">
+                <i class="fas fa-shopping-cart"></i>
+                Cart (<span id="mobileCartCount">0</span>)
+            </a>
+        </div>
+    </div>
+</header>
+
+<script>
+    // Header JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        const userBtn = document.getElementById('userBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+
+        // Toggle user dropdown
+        userBtn?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function() {
+            userDropdown.classList.remove('show');
+        });
+
+        // Mobile menu toggle
+        navToggle?.addEventListener('click', function() {
+            mobileMenu.classList.toggle('show');
+            navToggle.classList.toggle('active');
+        });
+
+        // Search functionality
+        searchForm?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            if (query) {
+                window.location.href = `/pages/products.html?search=${encodeURIComponent(query)}`;
+            }
+        });
+
+        // Update cart count
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            document.getElementById('cartCount').textContent = totalItems;
+            document.getElementById('mobileCartCount').textContent = totalItems;
+        }
+
+        // Update user menu based on authentication
+        function updateUserMenu() {
+            const token = localStorage.getItem('token');
+            const userName = localStorage.getItem('userName') || 'Account';
+            
+            if (token) {
+                document.getElementById('guestMenu').style.display = 'none';
+                document.getElementById('userMenu').style.display = 'block';
+                document.getElementById('userName').textContent = userName;
+            } else {
+                document.getElementById('guestMenu').style.display = 'block';
+                document.getElementById('userMenu').style.display = 'none';
+            }
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            updateUserMenu();
+            window.location.href = '/index.html';
+        });
+
+        // Initialize
+        updateCartCount();
+        updateUserMenu();
+
+        // Listen for cart updates
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'cart') {
+                updateCartCount();
+            }
+        });
+    });
+</script>

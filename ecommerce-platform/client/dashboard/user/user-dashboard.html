@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - E-commerce Platform</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <link rel="stylesheet" href="css/user-dashboard.css">
+</head>
+<body>
+    <div id="app">
+        <header id="header-container"></header>
+        
+        <main class="user-dashboard">
+            <aside class="user-sidebar">
+                <nav class="user-nav">
+                    <ul>
+                        <li><a href="#overview" class="nav-link active">Overview</a></li>
+                        <li><a href="#orders" class="nav-link">My Orders</a></li>
+                        <li><a href="#profile" class="nav-link">Profile</a></li>
+                        <li><a href="#wishlist" class="nav-link">Wishlist</a></li>
+                        <li><a href="#addresses" class="nav-link">Addresses</a></li>
+                        <li><a href="#reviews" class="nav-link">Reviews</a></li>
+                    </ul>
+                </nav>
+            </aside>
+            
+            <section class="user-content">
+                <div class="user-header">
+                    <h1>My Dashboard</h1>
+                    <div class="user-info">
+                        <span id="user-name">Welcome, User</span>
+                        <button class="btn-logout" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+                
+                <div class="user-overview">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Total Orders</h3>
+                            <p class="stat-number" id="user-orders">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Spent</h3>
+                            <p class="stat-number" id="user-spent">$0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Wishlist Items</h3>
+                            <p class="stat-number" id="user-wishlist">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Reviews</h3>
+                            <p class="stat-number" id="user-reviews">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="recent-orders">
+                        <h2>Recent Orders</h2>
+                        <div id="user-orders-list"></div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <h2>Quick Actions</h2>
+                        <div class="action-buttons">
+                            <button onclick="navigateTo('products')">Browse Products</button>
+                            <button onclick="navigateTo('cart')">View Cart</button>
+                            <button onclick="navigateTo('profile')">Edit Profile</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="user-sections">
+                    <div class="order-history" id="orders-section">
+                        <h2>Order History</h2>
+                        <div id="orders-list"></div>
+                    </div>
+                    
+                    <div class="profile-section" id="profile-section">
+                        <h2>Profile Information</h2>
+                        <form id="profile-form">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                            <button type="submit" class="btn-primary">Update Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer id="footer-container"></footer>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="js/user-profile.js"></script>
+    <script src="js/order-history.js"></script>
+    <script>
+        // User Dashboard JavaScript
+        class UserDashboard {
+            constructor() {
+                this.token = localStorage.getItem('token');
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.loadUserData();
+            }
+
+            bindEvents() {
+                document.getElementById('profile-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.updateProfile();
+                });
+            }
+
+            async loadUserData() {
+                try {
+                    const response = await fetch('/api/user/dashboard', {
+                        headers: {
+                            'Authorization': `Bearer ${this.token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to load user data');
+                    }
+
+                    const data = await response.json();
+                    this.renderDashboard(data);
+                } catch (error) {
+                    console.error('Error loading user data:', error);
+                }
+            }
+
+            renderDashboard(data) {
+                this.updateStats(data.stats);
+                this.renderOrders(data.orders);
+                this.renderProfile(data.profile);
+            }
+
+            updateStats(stats) {
+                document.getElementById('user-orders').textContent = stats.totalOrders || 0;
+                document.getElementById('user-spent').textContent = `$${stats.totalSpent || 0}`;
+                document.getElementById('user-wishlist').textContent = stats.wishlistItems || 0;
+                document.getElementById('user-reviews').textContent = stats.totalReviews || 0;
+            }
+
+            renderOrders(orders) {
+                const ordersList = document.getElementById('orders-list');
+                if (!ordersList) return;
+
+                ordersList.innerHTML = orders.map(order => `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <h3>Order #${order.id}</h3>
+                            <span class="order-status ${order.status}">${order.status}</span>
+                        </div>
+                        <div class="order-details">
+                            <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+                            <p><strong>Total:</strong> $${order.total}</p>
+                            <p><strong>Items:</strong> ${order.items.length} items</p>
+                        </div>
+                        <div class="order-actions">
+                            <button onclick="viewOrder(${order.id})">View Details</button>
+                            ${order.status === 'pending' ? `<button onclick="cancelOrder(${order.id})">Cancel</button>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            renderProfile(profile) {
+                document.getElementById('firstName').value = profile.firstName || '';
+                document.getElementById('lastName').value = profile.lastName || '';
+                document.getElementById('email').value = profile.email || '';
+                document.getElementById('phone').value = profile.phone || '';
+            }
+
+            async updateProfile() {
+                const formData = new FormData(document.getElementById('profile-form'));
+                const profileData = Object.fromEntries(formData);
+
+                try {
+                    const response = await fetch('/api/user/profile', {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${this.token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(profileData)
+                    });
+
+                    if (response.ok) {
+                        alert('Profile updated successfully');
+                    } else {
+                        alert('Failed to update profile');
+                    }
+                } catch (error) {
+                    console.error('Error updating profile:', error);
+                }
+            }
+        }
+
+        // Global functions
+        function navigateTo(page) {
+            window.location.href = `/pages/${page}.html`;
+        }
+
+        function viewOrder(orderId) {
+            window.location.href = `/pages/orders.html?id=${orderId}`;
+        }
+
+        function cancelOrder(orderId) {
+            if (confirm('Are you sure you want to cancel this order?')) {
+                fetch(`/api/user/orders/${orderId}/cancel`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Failed to cancel order');
+                    }
+                });
+            }
+        }
+
+        // Initialize user dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            new UserDashboard();
+        });
+    </script>
+</body>
+</html>

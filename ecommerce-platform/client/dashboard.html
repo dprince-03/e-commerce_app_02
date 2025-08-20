@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Dashboard</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/themes.css">
+</head>
+<body>
+    <div id="app">
+        <header id="header-container"></header>
+        
+        <main class="dashboard-container">
+            <aside class="sidebar" id="sidebar-container"></aside>
+            
+            <section class="main-content">
+                <div class="dashboard-header">
+                    <h1>Dashboard</h1>
+                    <div class="user-info">
+                        <span id="user-name">Welcome, User</span>
+                        <button class="btn-logout" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <h3>Total Orders</h3>
+                        <p class="stat-number" id="total-orders">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Revenue</h3>
+                        <p class="stat-number" id="total-revenue">$0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Products</h3>
+                        <p class="stat-number" id="total-products">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Customers</h3>
+                        <p class="stat-number" id="total-customers">0</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-sections">
+                    <div class="recent-orders">
+                        <h2>Recent Orders</h2>
+                        <div id="recent-orders-list"></div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <h2>Quick Actions</h2>
+                        <div class="action-buttons">
+                            <button onclick="navigateTo('products')">Manage Products</button>
+                            <button onclick="navigateTo('orders')">View Orders</button>
+                            <button onclick="navigateTo('profile')">Edit Profile</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer id="footer-container"></footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Dashboard specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+            loadComponents();
+        });
+
+        async function loadDashboardData() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/dashboard/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    updateDashboardStats(data);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        function updateDashboardStats(data) {
+            document.getElementById('total-orders').textContent = data.totalOrders || 0;
+            document.getElementById('total-revenue').textContent = `$${data.totalRevenue || 0}`;
+            document.getElementById('total-products').textContent = data.totalProducts || 0;
+            document.getElementById('total-customers').textContent = data.totalCustomers || 0;
+        }
+
+        function navigateTo(page) {
+            window.location.href = `/pages/${page}.html`;
+        }
+
+        async function loadComponents() {
+            await loadComponent('header-container', 'components/header.html');
+            await loadComponent('sidebar-container', 'components/sidebar.html');
+            await loadComponent('footer-container', 'components/footer.html');
+        }
+
+        async function loadComponent(containerId, filePath) {
+            try {
+                const response = await fetch(filePath);
+                const html = await response.text();
+                document.getElementById(containerId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component ${filePath}:`, error);
+            }
+        }
+    </script>
+</body>
+</html>
